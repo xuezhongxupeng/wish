@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<canvas id="canvas" width="800" height="600" style="border:1px solid red"></canvas>
+</body>
+<script src="jquery-2.1.4.js"></script>
+<script>
+
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+
+    function Chan(opt){
+        $.extend(this,opt);
+        this.init();
+    }
+
+    Chan.prototype={
+        constructor:Chan,
+        init:function() {
+            this.ctx.font="30px 微软雅黑";
+            this.ctx.textAlign="center";
+            this.ctx.textBaseline="middle";
+            this.bindEvents();
+            this.Run(10);
+        },
+
+        bindEvents: function () {
+
+            var canvas=this.ctx.canvas;
+            var self = this;
+            $(canvas).on("mouseenter", function () {
+                self.Run(50);
+            }),
+            $(canvas).on("mouseleave", function () {
+                self.Run(10);
+            })
+
+        },
+        Run: function (speed) {
+            var self=this;
+            clearInterval(this.timer);
+             this.timer=setInterval(function(){
+                this.ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                self.drawBigCircle();
+                self.drawSmallCircle();
+                self.start+=0.01 * Math.PI;
+
+            },speed)
+        },
+        drawBigCircle:function(){
+
+            this.ctx=ctx;
+            ctx.beginPath();
+            ctx.arc(this.bigX,this.bigY,this.bigRadius,0,2*Math.PI);
+            ctx.stroke();
+        },
+
+        drawSmallCircle: function () {
+
+
+            ctx=this.ctx;
+            var num=this.data.length;
+            console.log(num);
+            radian=2*Math.PI/num;
+            for(var i=0;i<num;i++){
+               var smallRadian=this.start+radian*i;
+                var b=Math.sin(smallRadian)*this.bigRadius;
+                var h=Math.cos(smallRadian)*this.bigRadius;
+                ctx.beginPath();
+                ctx.arc(h+this.bigX,b+this.bigY,this.smallRadius,0,2*Math.PI);
+                ctx.fillStyle="green";
+
+                ctx.fill();
+                ctx.fillStyle="#daa520";
+                ctx.fillText(this.data[i],h+this.bigX,b+this.bigY);
+            }
+
+
+        }
+
+
+    }
+    var opt = {
+        ctx: ctx,
+        bigX: 300,
+        bigY: 300,
+        bigRadius: 200,
+        smallRadius: 60,
+        start: 0,
+        data:["javascript", "php", "oc", "python", "ruby", "java"]
+    }
+
+    new Chan(opt);
+</script>
+</html>
