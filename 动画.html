@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>zhongV</title>
+</head>
+<body>
+<canvas id="canvas" width="800" height="600" style="border:1px solid red"></canvas>
+</body>
+<script>
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    var img = new Image();
+//    var img2 = new Image();
+    img.src = "./NPC-hunter_M-2.png";
+//    img2.src = "./15.JPG";
+    var speed = 8;
+
+    window.onload = function(){
+        var width = img.width/4;
+        var height = img.height/4;
+        var timer = null;
+        var ready = null;
+        var x = 350,y=250;
+
+        //传入的j为状态值，0：下，1：左，2：右，3：上
+       function turn(j){
+           clearInterval(timer);
+           var i= 0;
+           timer = setInterval(function(){
+               var picX = width*i;
+               var picY = height*j;
+
+               ctx.clearRect(0,0,canvas.width,canvas.height);
+
+//               ctx.drawImage(img2,0,600,800,600,0,0,800,600);
+               ctx.drawImage(img,picX,picY,width,height,x,y,width,height);
+               i++;
+               i==4?i=0:i;
+
+               if(j==0) y+= speed;//上e
+               if(j==1) x-= speed;//左e
+               if(j==2) x+= speed//右e
+               if(j==3) y-= speed;//下
+
+               //边界检测
+               if(x<0||y<0||x>canvas.width-width||y>canvas.height-height){
+                   //清楚定时器，人物停止
+                   clearInterval(timer);
+                   ctx.fillStyle = "deeppink";
+                   ctx.fillText("哎呀，好疼，还是换个方向吧",400,250)
+               }
+
+           },80)
+       }
+
+        ctx.font = "40px lisu";
+        ctx.fillStyle = "skyblue";
+        ctx.textAlign = "center";
+        ctx.fillText("方向键控制人物的移动",400,150);
+        ctx.drawImage(img,0,0,width,height,x,y,width,height);
+        window.onkeydown = function(e){
+
+            //上键控制往上走（传入状态值3）
+            if(e.keyCode==38&&ready!=3){//如果状态值为3将不再进入
+                ready=3;
+                //当x方向走到边界时停止后，任然可以在y方向行走
+                if(x<0) x=0;
+                if(x>canvas.width-width) x=canvas.width-width;
+                //当已经走到下边界外时，使其y值变为可取的最大值
+                if(y>canvas.height-height) y=canvas.height-height;
+                turn(ready);
+            }
+
+            //下键控制往下走（传入状态值0）
+            if(e.keyCode==40&&ready!=0){//如果状态值为0将不再进入
+                ready = 0;
+                //当x方向走到边界时停止后，任然可以在y方向行走
+                if(x<0) x=0;
+                if(x>canvas.width-width) x=canvas.width-width;
+                //当已经走到上边界外时，使其y值变为可取的最小值
+                if(y<0) y=0;
+                turn(ready);
+            }
+
+            //左键控制往左走（传入状态值1）
+            if(e.keyCode==37&&ready!=1){//如果状态值为1将不再进入
+                ready=1;
+                //当y方向走到边界时停止后，任然可以在x方向行走
+                if(y<0) y=0;
+                if(y>canvas.height-height) y=canvas.height-height;
+                //当已经走到右边界外时，使其x值变为可取的最大值
+                if(x>canvas.width-width) x=canvas.width-width;
+                turn(ready);
+            }
+
+            //右键控制往右走（传入状态值2）
+            if(e.keyCode==39&&ready!=2){//如果状态值为2将不再进入
+                ready=2;
+                //当y方向走到边界时停止后，任然可以在x方向行走
+                if(y<0) y=0;
+                if(y>canvas.height-height) y=canvas.height-height;
+                //当已经走到左边界外时，使其x值变为可取的最小值
+                if(x<0) x=0;
+                turn(ready);
+            }
+        };
+    };
+</script>
+</html>
